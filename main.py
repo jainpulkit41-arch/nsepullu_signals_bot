@@ -1,11 +1,11 @@
 import yfinance as yf
 import pandas as pd
 import requests
-from datetime import datetime, time
+import time
+from datetime import datetime
 
-# ===== YOUR DETAILS =====
-TELEGRAM_TOKEN = "PASTE_YOUR_TOKEN_HERE"
-CHAT_ID = "PASTE_YOUR_CHAT_ID_HERE"
+TELEGRAM_TOKEN = "8950241486:AAGZsROFCD4G9_CJz_yXK91kD7h154szUeM"
+CHAT_ID = "1134407714"
 
 stocks = [
     "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS",
@@ -17,12 +17,6 @@ signals_today = {}
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
-
-
-def get_data(symbol):
-    df = yf.download(symbol, interval="5m", period="5d")
-    df.dropna(inplace=True)
-    return df
 
 
 def analyze(symbol):
@@ -39,7 +33,6 @@ def analyze(symbol):
         df["date"] = df.index.date
 
         dates = df["date"].unique()
-
         if len(dates) < 2:
             return
 
@@ -52,14 +45,14 @@ def analyze(symbol):
         if len(ydf) < 40 or len(tdf) == 0:
             return
 
-        first_candle_high = float(ydf.iloc[0]["High"])
-first_candle_low = float(ydf.iloc[0]["Low"])
+        first_high = float(ydf.iloc[0]["High"])
+        first_low = float(ydf.iloc[0]["Low"])
 
-y_high = float(ydf["High"].max())
-y_low = float(ydf["Low"].min())
+        y_high = float(ydf["High"].max())
+        y_low = float(ydf["Low"].min())
 
-bearish = first_candle_high == y_high
-bullish = first_candle_low == y_low
+        bearish = first_high == y_high
+        bullish = first_low == y_low
 
         block1 = ydf.iloc[:39]
         block2 = ydf.iloc[39:75]
@@ -76,10 +69,10 @@ bullish = first_candle_low == y_low
             if signals_today[symbol]:
                 break
 
-            if row.name.time() < time(9, 20):
+            if row.name.time() < datetime.strptime("09:20", "%H:%M").time():
                 continue
 
-            price = row["Close"]
+            price = float(row["Close"])
 
             if bearish and price < lvl1 and price < lvl2:
                 send_telegram(f"🔴 SELL SIGNAL\n{symbol}\nPrice: {price:.2f}")
@@ -92,17 +85,12 @@ bullish = first_candle_low == y_low
                 break
 
     except Exception as e:
-        print("ERROR in", symbol, e)
+        print("ERROR:", symbol, e)
 
-
-import time
 
 def run():
     for s in stocks:
-        try:
-            analyze(s)
-        except Exception as e:
-            print("ERROR:", s, e)
+        analyze(s)
 
 
 if __name__ == "__main__":
