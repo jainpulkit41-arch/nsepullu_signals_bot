@@ -95,13 +95,17 @@ bullish = first_candle_low == y_low
         print("ERROR in", symbol, e)
 
 
+import time
+
 def run():
     for s in stocks:
         try:
             analyze(s)
         except Exception as e:
-            print(s, e)
+            print("ERROR:", s, e)
 
 
 if __name__ == "__main__":
-    run()
+    while True:
+        run()
+        time.sleep(300)
