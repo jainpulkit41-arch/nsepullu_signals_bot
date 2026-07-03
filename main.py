@@ -7,10 +7,7 @@ from datetime import datetime
 TELEGRAM_TOKEN = "8950241486:AAGZsROFCD4G9_CJz_yXK91kD7h154szUeM"
 CHAT_ID = "1134407714"
 
-stocks = [
-    "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS",
-    "ICICIBANK.NS", "SBIN.NS", "LT.NS", "ITC.NS"
-]
+stocks = ["RELIANCE.NS", "TCS.NS", "INFY.NS"]
 
 signals_today = {}
 
@@ -23,7 +20,7 @@ def analyze(symbol):
     global signals_today
 
     try:
-        df = yf.download(symbol, interval="5m", period="5d", progress=False)
+        df = yf.download(symbol, interval="5m", period="2d", progress=False)
 
         if df is None or df.empty:
             print("No data:", symbol)
@@ -91,6 +88,7 @@ def analyze(symbol):
 def run():
     for s in stocks:
         analyze(s)
+        time.sleep(12)  # IMPORTANT: prevents rate limit
 
 
 if __name__ == "__main__":
