@@ -90,4 +90,8 @@ def run():
             print(s, e)
 
 
-run()
+import time
+
+while True:
+    run()
+    time.sleep(300)  # 300 seconds = 5 minutes
