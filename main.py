@@ -52,13 +52,14 @@ def analyze(symbol):
         if len(ydf) < 40 or len(tdf) == 0:
             return
 
-        first_candle = ydf.iloc[0]
+        first_candle_high = float(ydf.iloc[0]["High"])
+first_candle_low = float(ydf.iloc[0]["Low"])
 
-        y_high = ydf["High"].max()
-        y_low = ydf["Low"].min()
+y_high = float(ydf["High"].max())
+y_low = float(ydf["Low"].min())
 
-        bearish = first_candle["High"] == y_high
-        bullish = first_candle["Low"] == y_low
+bearish = first_candle_high == y_high
+bullish = first_candle_low == y_low
 
         block1 = ydf.iloc[:39]
         block2 = ydf.iloc[39:75]
