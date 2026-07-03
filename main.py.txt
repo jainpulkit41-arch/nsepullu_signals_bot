@@ -90,8 +90,5 @@ def run():
             print(s, e)
 
 
-import time
-
-while True:
+if __name__ == "__main__":
     run()
-    time.sleep(300)  # 300 seconds = 5 minutes
